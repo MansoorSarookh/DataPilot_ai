@@ -134,14 +134,44 @@ def get_missing_analysis(df: pd.DataFrame) -> pd.DataFrame:
     return missing_df
 
 
-def get_correlation_matrix(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculate correlation matrix for numeric columns."""
-    numeric_df = df.select_dtypes(include=[np.number])
+# def get_correlation_matrix(df: pd.DataFrame) -> pd.DataFrame:
+#     """Calculate correlation matrix for numeric columns."""
+#     numeric_df = df.select_dtypes(include=[np.number])
     
+#     if numeric_df.empty or len(numeric_df.columns) < 2:
+#         return pd.DataFrame()
+    
+#     return numeric_df.corr()
+def get_correlation_matrix(df: pd.DataFrame, method="pearson") -> pd.DataFrame:
+    """
+    Calculate correlation matrix for numeric columns.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Input dataset.
+    method : str
+        Correlation method: pearson, spearman, or kendall.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Correlation matrix.
+    """
+
+    numeric_df = df.select_dtypes(include=[np.number])
+
     if numeric_df.empty or len(numeric_df.columns) < 2:
         return pd.DataFrame()
-    
-    return numeric_df.corr()
+
+    method = str(method).lower().strip()
+
+    valid_methods = {"pearson", "spearman", "kendall"}
+
+    if method not in valid_methods:
+        method = "pearson"
+
+    return numeric_df.corr(method=method)
 
 
 def detect_outliers(df: pd.DataFrame, method: str = 'iqr') -> Dict[str, Dict]:
